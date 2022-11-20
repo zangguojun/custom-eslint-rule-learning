@@ -19,13 +19,32 @@ const rule = require("../../../lib/rules/route-define"),
 const ruleTester = new RuleTester();
 ruleTester.run("route-define", rule, {
   valid: [
-    // give me some code that won't trigger a warning
+    {
+      code: "function getName(){ return 'cxr'}",
+    },
+    {
+      code: "function setName(){}",
+    },
   ],
-
   invalid: [
     {
-      code: "",
-      errors: [{ message: "Fill me in.", type: "Me too" }],
+      name: "should throw error when function doesn't return value",
+      code: "function getName(){}",
+      output: "function getName(){return ''\r}",
+      errors: [{ message: "getXX function name must return a value" }],
+    },
+    {
+      name: "should throw error when function doesn't return value",
+      code: "function getName(){ const name = 'cxr'}",
+      errors: [{ message: "getXX function name must return a value" }],
+      output: `function getName(){ const name = 'cxr';return ''\r}`,
+    },
+    {
+      name: "no fix",
+      code: "function getName(){}",
+      output: null,
+      options: [false],
+      errors: [{ message: "getXX function name must return a value" }],
     },
   ],
 });
